@@ -75,12 +75,10 @@ class Vendor(db.Model):
     state = db.Column(db.String)
     zip_code = db.Column(db.Integer)
 
-    def __init__(self, company, part, price, last_name, first_name, address_line_1, address_line_2, city, state, zip_code):
+    def __init__(self, company, part, price, address_line_1, address_line_2, city, state, zip_code):
         self.company = company
         self.part = part
         self.price = price
-        self.last_name = last_name
-        self.first_name = first_name
         self.address_line_1 = address_line_1
         self.address_line_2 = address_line_2
         self.city = city
@@ -88,10 +86,10 @@ class Vendor(db.Model):
         self.zip_code = zip_code
 
     def __repr__(self):
-        return "<Vendor(company='%s', part='%s', price='%d', last_name='%s', first_name='%d', address_line_1='%s', \
-                address_line_2='%s',city='%s', state='%s', zip_code='%d')>" \
-               % (self.company, self.part, self.price, self.last_name, self.first_name, self.address_line_1,
-                self.address_line_2, self.city,  self.state, self.zip_code)
+        return "<Vendor(company='%s', part='%s', price='%d', address_line_1='%s', address_line_2='%s',city='%s', \
+                state='%s', zip_code='%d')>" \
+               % (self.company, self.part, self.price, self.address_line_1, self.address_line_2, self.city, 
+                self.state, self.zip_code)
 
 class PayrollEvents(db.Model):
     """ PayrollEvents Model with all the different payroll events that happen. """

@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Vendor</title>
+        <link href="static/css/form.css" rel="stylesheet">
+    </head>
+    <body>
+        <form action="/add_vendor" method="POST">
+            <br>
+            <br>
+            <br>
+            <header><h1>Add a New Vendor</h1></header>
+            <div class="help">{{ error }}</div>
+            <label>Company Name</label>
+            <input id="company" name="company" type="text" placeholder="Company Name" required>
+            <label>Part</label>
+            <input id="part" name="part" type="text" placeholder="Part" required>
+            <label>Price/Unit</label>
+            <input id="price" name="price" type="number" step="0.01" placeholder="Price/Unit" required>
+            <label>Address Line 1</label>
+            <input id="address_line_1" name="address_line_1" type="text" placeholder="Address Line 1" required>
+            <label>Address Line 2</label>
+            <input id="address_line_2" name="address_line_2" type="text" placeholder="Address Line 2">
+            <label>City</label>
+            <input id="city" name="city" type="text" placeholder="City" required>
+            <label>State</label>
+            <input id="state" name="state" type="text" placeholder="State" required>
+            <label>Zip Code</label>
+            <input id="zip_code" name="zip_code" type="number" placeholder="Zip Code" required>
+            <button>Add Vendor</button>
+        </form>
+    </body>
+</html>

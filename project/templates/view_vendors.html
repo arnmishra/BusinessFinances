@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Vendors</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>Part</th>
+            <th>Price/Unit</th>
+            <th>Address Line 1</th>
+            <th>Address Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for vendor in vendors %}
+              <tr>
+                <td>{{ vendor.company }}</td>
+                <td> {{ vendor.part }}</td>
+                <td> $ {{ vendor.price }}</td>
+                <td> {{ vendor.address_line_1 }}</td>
+                <td> {{ vendor.address_line_2 }}</td>
+                <td> {{ vendor.city }}</td>
+                <td> {{ vendor.state }}</td>
+                <td> {{ vendor.zip_code }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>
