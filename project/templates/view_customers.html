@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Customers</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Company Name</th>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Address Line 1</th>
+            <th>Address Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Price</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for customer in customers %}
+              <tr>
+                <td>{{ customer.company }}</td>
+                <td>{{ customer.last_name }}</td>
+                <td>{{ customer.first_name}}</td>
+                <td> {{ customer.address_line_1 }}</td>
+                <td> {{ customer.address_line_2 }}</td>
+                <td> {{ customer.city }}</td>
+                <td> {{ customer.state }}</td>
+                <td> {{ customer.zip_code }}</td>
+                <td> $ {{ customer.price }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>

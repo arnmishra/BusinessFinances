@@ -15,7 +15,6 @@ def view_employees():
     :return: view_employees.html
     """
     employees = Employee.query.all()
-    print employees
     return render_template("view_employees.html", employees=employees)
 
 @app.route("/add_employee", methods=['GET', 'POST'])
@@ -43,5 +42,34 @@ def add_employee():
                     num_withholdings, salary)
     db.session.add(new_employee)
     db.session.commit()
-    employees = Employee.query.all()
     return redirect("/view_employees")
+
+@app.route("/view_customers", methods=['GET'])
+def view_customers():
+    """ Renders Customer View page
+    :return: view_customers.html
+    """
+    customers = Customer.query.all()
+    return render_template("view_customers.html", customers=customers)
+
+@app.route("/add_customer", methods=['GET', 'POST'])
+def add_customer():
+    """ Renders Customer Add page
+
+    :return: add_customer.html
+    """
+    if request.method == "GET":
+        return render_template("add_customer.html")
+    company = request.form["company"]
+    last_name = request.form["last_name"]
+    first_name = request.form["first_name"]
+    address_line_1 = request.form["address_line_1"]
+    address_line_2 = request.form["address_line_2"]
+    city = request.form["city"]
+    state = request.form["state"]
+    zip_code = float(request.form["zip_code"])
+    price = float(request.form["price"])
+    new_customer = Customer(company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code, price)
+    db.session.add(new_customer)
+    db.session.commit()
+    return redirect("/view_customers")

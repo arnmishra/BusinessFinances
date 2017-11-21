@@ -2,16 +2,18 @@
 <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Add Employee</title>
+        <title>Add Customer</title>
         <link href="static/css/form.css" rel="stylesheet">
     </head>
     <body>
-        <form action="/add_employee" method="POST">
+        <form action="/add_customer" method="POST">
             <br>
             <br>
             <br>
-            <header><h1>Add a New Employee</h1></header>
+            <header><h1>Add a New Customer</h1></header>
             <div class="help">{{ error }}</div>
+            <label>Company Name</label>
+            <input id="company" name="company" type="text" placeholder="Company Name" required>
             <label>Last Name</label>
             <input id="last_name" name="last_name" type="text" placeholder="Last Name" required>
             <label>First Name</label>
@@ -26,15 +28,9 @@
             <input id="state" name="state" type="text" placeholder="State" required>
             <label>Zip Code</label>
             <input id="zip_code" name="zip_code" type="number" placeholder="Zip Code" required>
-            <label>Social Security Number: XXX-XX-XXXX</label>
-            <input id="social_security_1" name="social_security_1" type="number" min="0" max="999" placeholder="XXX" required>
-            <input id="social_security_2" name="social_security_2" type="number" min="0" max="99" placeholder="XX" required>
-            <input id="social_security_3" name="social_security_3" type="number" min="0" max="9999" placeholder="XXXX" required>
-            <label># Of Withholdings</label>
-            <input id="num_withholdings" name="num_withholdings" type="number" placeholder="# Of Withholdings" required>
-            <label>Salary</label>
-            <input id="salary" name="salary" type="number" step="0.01" placeholder="Salary" required>
-            <button>Add Employee</button>
+            <label>Price</label>
+            <input id="price" name="price" type="number" step="0.01" placeholder="Price" required>
+            <button>Add Customer</button>
         </form>
     </body>
 </html>
