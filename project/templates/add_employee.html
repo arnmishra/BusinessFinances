@@ -30,10 +30,19 @@
             <input id="social_security_1" name="social_security_1" type="number" min="0" max="999" placeholder="XXX" required>
             <input id="social_security_2" name="social_security_2" type="number" min="0" max="99" placeholder="XX" required>
             <input id="social_security_3" name="social_security_3" type="number" min="0" max="9999" placeholder="XXXX" required>
-            <label># Of Withholdings</label>
-            <input id="num_withholdings" name="num_withholdings" type="number" placeholder="# Of Withholdings" required>
+            <label># Of Federal Withholdings</label>
+            <input id="federal_withholdings" name="federal_withholdings" type="number" placeholder="# Of Federal Withholdings" required>
+            <label># Of State Line 1 Withholdings (# dependents, personal allowances, etc.)</label>
+            <input id="state_line1_withholdings" name="state_line1_withholdings" type="number" placeholder="# Of Federal Withholdings" required>
+            <label># Of State Line 2 Withholdings (65+, legally blind, spouse 65+, etc.)</label>
+            <input id="state_line2_withholdings" name="state_line2_withholdings" type="number" placeholder="# Of Federal Withholdings" required>
             <label>Salary</label>
             <input id="salary" name="salary" type="number" step="0.01" placeholder="Salary" required>
+            <label>Marital Status</label>
+            <select name="marital_status" id="marital_status" required>
+                <option value="single">Single</option>
+                <option value="married">Married</option>
+            </select> <br>
             <button>Add Employee</button>
         </form>
     </body>

@@ -17,7 +17,9 @@
             <th>State</th>
             <th>Zip</th>
             <th>Social Security #</th>
-            <th># of Withholdings</th>
+            <th># of Federal Withholdings</th>
+            <th># of State Line 1 Withholdings</th>
+            <th># of State Line 2 Withholdings</th>
             <th>Salary</th>
           </tr>
         </thead>
@@ -33,7 +35,9 @@
                 <td> {{ employee.state }}</td>
                 <td> {{ employee.zip_code }}</td>
                 <td> {{ employee.social_security }}</td>
-                <td> {{ employee.num_withholdings }}</td>
+                <td> {{ employee.federal_withholdings }}</td>
+                <td> {{ employee.state_line1_withholdings }}</td>
+                <td> {{ employee.state_line2_withholdings }}</td>
                 <td> {{ employee.salary }}</td>
               </tr>
             {% endfor %}

@@ -1,6 +1,7 @@
 from project import app, db
 from models import Employee, Customer, Vendor, PayrollEvents
 from flask import render_template, url_for, request, redirect
+from project.scripts.taxes import calculate_social_security_tax, calculate_medicare_tax, calculate_federal_tax, calculate_state_tax
 
 @app.route("/", methods=['GET'])
 def index():
@@ -36,10 +37,13 @@ def add_employee():
     social_security_2 = request.form["social_security_2"]
     social_security_3 = request.form["social_security_3"]
     social_security = "%s-%s-%s" % (social_security_1, social_security_2, social_security_3)
-    num_withholdings = float(request.form["num_withholdings"])
+    federal_withholdings = float(request.form["federal_withholdings"])
+    state_line1_withholdings = float(request.form["state_line1_withholdings"])
+    state_line2_withholdings = float(request.form["state_line2_withholdings"])
     salary = float(request.form["salary"])
+    marital_status = request.form["marital_status"]
     new_employee = Employee(last_name, first_name, address_line_1, address_line_2, city, state, zip_code, social_security,
-                    num_withholdings, salary)
+                    federal_withholdings, state_line1_withholdings, state_line2_withholdings, salary, marital_status)
     db.session.add(new_employee)
     db.session.commit()
     return redirect("/view_employees")
@@ -112,8 +116,25 @@ def pay_employees():
     if request.method == "GET":
         employees = Employee.query.all()
         return render_template("pay_employees.html", employees=employees)
-    print request.form
-    employees = request.form.getlist("employee")
-    for employee in employees:
-        print employee
-    return redirect("/")
+    employee_ids = request.form.getlist("employee")
+    for employee_id in employee_ids:
+        employee = Employee.query.filter_by(id=employee_id).first()
+        salary = employee.salary
+        name = '%s %s' % (employee.first_name, employee.last_name)
+        social_security_tax = calculate_social_security_tax(salary)
+        medicare_tax = calculate_medicare_tax(salary)
+        federal_tax_withholding = calculate_federal_tax(salary, employee.marital_status, employee.federal_withholdings)
+        state_tax_withholding = calculate_state_tax(salary, employee.state_line1_withholdings, employee.state_line2_withholdings)
+        total_paid = salary - social_security_tax - federal_tax_withholding - medicare_tax - state_tax_withholding
+        payroll_event = PayrollEvents(salary, 0, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, name, total_paid)
+        db.session.add(payroll_event)
+    db.session.commit()
+    return redirect("/view_payroll_events")
+
+@app.route("/view_payroll_events", methods=['GET'])
+def view_payroll_events():
+    """ Renders Payroll Events page
+    :return: view_payroll_events.html
+    """
+    payroll_events = PayrollEvents.query.all()
+    return render_template("view_payroll_events.html", payroll_events=payroll_events)

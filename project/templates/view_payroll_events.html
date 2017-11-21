@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Payroll Events</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Employee Name</th>
+            <th>Salary</th>
+            <th>Bounce</th>
+            <th>Federal Tax Withholdings</th>
+            <th>State Tax Withholdings</th>
+            <th>Social Security Tax Withholding</th>
+            <th>Medicare Tax Withholding</th>
+            <th>Amount Paid</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for payroll in payroll_events %}
+              <tr>
+                <td>{{ payroll.employee_name }}</td>
+                <td>{{ payroll.salary}}</td>
+                <td> {{ payroll.bounce }}</td>
+                <td> {{ payroll.federal_tax_withholding }}</td>
+                <td> {{ payroll.state_tax_withholding }}</td>
+                <td> {{ payroll.social_security_tax }}</td>
+                <td> {{ payroll.medicare_tax }}</td>
+                <td> {{ payroll.total_paid }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>
