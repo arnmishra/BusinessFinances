@@ -102,3 +102,18 @@ def add_vendor():
     db.session.add(new_vendor)
     db.session.commit()
     return redirect("/view_vendors")
+
+@app.route("/pay_employees", methods=['GET', 'POST'])
+def pay_employees():
+    """ Renders Pay Employee page
+
+    :return: pay_employees.html
+    """
+    if request.method == "GET":
+        employees = Employee.query.all()
+        return render_template("pay_employees.html", employees=employees)
+    print request.form
+    employees = request.form.getlist("employee")
+    for employee in employees:
+        print employee
+    return redirect("/")

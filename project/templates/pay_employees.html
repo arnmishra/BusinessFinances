@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Pay Employees</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+  </head>
+  <body>
+  	<form action="/pay_employees" method="POST">
+  		{% for employee in employees %}
+              <tr>
+              	<input type="checkbox" name="employee" value="{{ employee.id }}">{{ employee.last_name }}, {{ employee.first_name }}<br>
+              </tr>
+        {% endfor %}
+		<input type="submit" value="Pay Employees">
+	</form>
+  </body>
+</html>
