@@ -104,7 +104,7 @@ class PayrollEvents(db.Model):
     medicare_tax = db.Column(db.String)
     employee_name = db.Column(db.String)
 
-    def __init__(self, salary, bounce, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax
+    def __init__(self, salary, bounce, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, 
                 employee_name):
         self.salary = salary
         self.bounce = bounce

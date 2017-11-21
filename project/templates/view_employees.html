@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Employees</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Last Name</th>
+            <th>First Name</th>
+            <th>Address Line 1</th>
+            <th>Address Line 2</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Social Security #</th>
+            <th># of Withholdings</th>
+            <th>Salary</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for employee in employees %}
+              <tr>
+                <td>{{ employee.last_name }}</td>
+                <td>{{ employee.first_name}}</td>
+                <td> {{ employee.address_line_1 }}</td>
+                <td> {{ employee.address_line_2 }}</td>
+                <td> {{ employee.city }}</td>
+                <td> {{ employee.state }}</td>
+                <td> {{ employee.zip_code }}</td>
+                <td> {{ employee.social_security }}</td>
+                <td> {{ employee.num_withholdings }}</td>
+                <td> {{ employee.salary }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>
