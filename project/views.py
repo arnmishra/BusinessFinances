@@ -179,6 +179,10 @@ def pay_employees():
         total_paid = salary - social_security_tax - federal_tax_withholding - medicare_tax - state_tax_withholding
         payroll_event = PayrollEvents(salary, 0, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, name, total_paid)
         db.session.add(payroll_event)
+        income_statement["payroll"] += total_paid
+        income_statement["payroll_withholding"] += social_security_tax + federal_tax_withholding + medicare_tax + state_tax_withholding
+        balance_sheet["cash"] -= total_paid
+        balance_sheet["net_worth"] -= total_paid
     db.session.commit()
     return redirect("/view_payroll_events")
 
