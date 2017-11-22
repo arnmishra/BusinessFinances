@@ -52,7 +52,6 @@ class Customer(db.Model):
     city = db.Column(db.String)
     state = db.Column(db.String)
     zip_code = db.Column(db.Integer)
-    price = db.Column(db.Integer)
 
     def __init__(self, company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code, price):
         self.company = company
@@ -63,13 +62,12 @@ class Customer(db.Model):
         self.city = city
         self.state = state
         self.zip_code = zip_code
-        self.price = price
 
     def __repr__(self):
         return "<Customer(company='%s', last_name='%s', first_name='%s', address_line_1='%s', address_line_2='%s', \
-                city='%s', state='%s', zip_code='%d', price='%d')>" \
+                city='%s', state='%s', zip_code='%d')>" \
                % (self.company, self.last_name, self.first_name, self.address_line_1, self.address_line_2,
-                self.city,  self.state, self.zip_code, self.price)
+                self.city,  self.state, self.zip_code)
 
 class Vendor(db.Model):
     """ Vendor Model with all data about Vendor. """
@@ -127,3 +125,63 @@ class PayrollEvents(db.Model):
                 social_security_tax='%d',medicare_tax='%d', employee_name='%s', total_paid='%d')>" \
                % (self.salary, self.bounce, self.federal_tax_withholding, self.state_tax_withholding,
                 self.social_security_tax, self.medicare_tax,  self.employee_name, self.total_paid)
+
+class Parts(db.Model):
+    """ Parts Model keeps an inventory of what the company has. """
+    id = db.Column(db.Integer, primary_key=True)
+    part = db.Column(db.Integer)
+    price_per_unit = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    value = db.Column(db.String)
+
+    def __init__(self, part, price_per_unit, quantity, value):
+        self.part = part
+        self.price_per_unit = price_per_unit
+        self.quantity = quantity
+        self.value = value
+
+    def __repr__(self):
+        return "<Parts(part='%d', price_per_unit='%d', quantity='%d', value='%d')>" \
+               % (self.part, self.price_per_unit, self.quantity, self.value)
+
+class InvoiceHistory(db.Model):
+    """ InvoiceHistory Model keeps the history of past invoices """
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Integer)
+    customer = db.Column(db.String)
+    quantity = db.Column(db.Integer)
+    price_per_unit = db.Column(db.Integer)
+    total = db.Column(db.Integer)
+
+    def __init__(self, date, customer, quantity, price_per_unit, total):
+        self.date = date
+        self.customer = customer
+        self.quantity = quantity
+        self.price_per_unit = price_per_unit
+        self.total = total
+
+    def __repr__(self):
+        return "<InvoiceHistory(date='%d', customer='%d', quantity='%d', price_per_unit='%d', total='%d')>" \
+               % (self.date, self.customer, self.quantity, self.price_per_unit, self.total)
+
+class POHistory(db.Model):
+    """ POHistory Model keeps the history of past invoices """
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Integer)
+    supplier = db.Column(db.String)
+    part = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+    price_per_unit = db.Column(db.Integer)
+    total = db.Column(db.Integer)
+
+    def __init__(self, date, supplier, part, quantity, price_per_unit, total):
+        self.date = date
+        self.supplier = supplier
+        self.part = part
+        self.quantity = quantity
+        self.price_per_unit = price_per_unit
+        self.total = total
+
+    def __repr__(self):
+        return "<POHistory(date='%d', supplier='%d', part='%d', quantity='%d', price_per_unit='%d', total='%d')>" \
+               % (self.date, self.supplier, self.part, self.quantity, self.price_per_unit, self.total)

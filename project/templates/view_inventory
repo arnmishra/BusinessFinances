@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Inventory</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Part</th>
+            <th>Price Per Unit</th>
+            <th>Quantity</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for item in inventory %}
+              <tr>
+                <td>{{ item.part }}</td>
+                <td>{{ item.price_per_unit }}</td>
+                <td>{{ item.quantity }}</td>
+                <td> {{ item.value }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>

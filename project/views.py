@@ -1,3 +1,4 @@
+import datetime
 from project import app, db
 from models import Employee, Customer, Vendor, PayrollEvents
 from flask import render_template, url_for, request, redirect
@@ -122,8 +123,7 @@ def add_customer():
     city = request.form["city"]
     state = request.form["state"]
     zip_code = float(request.form["zip_code"])
-    price = float(request.form["price"])
-    new_customer = Customer(company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code, price)
+    new_customer = Customer(company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code)
     db.session.add(new_customer)
     db.session.commit()
     return redirect("/view_customers")
@@ -228,3 +228,49 @@ def view_balance_sheet():
             total_fixed_assets=total_fixed_assets, total_assets=total_assets, total_long_term_debt=total_long_term_debt, 
             total_liabilities=total_liabilities, total_current_liabilities=total_current_liabilities, 
             total_liabilities_net_worth=total_liabilities_net_worth)
+
+@app.route("/view_inventory", methods=['GET'])
+def view_inventory():
+    """ Renders Inventory View page
+
+    :return: view_inventory.html
+    """
+    inventory = Parts.query.all()
+    return render_template("view_inventory.html", inventory=inventory)
+
+@app.route("/view_po_history", methods=['GET'])
+def view_po_history():
+    """ Renders Purchase Order History page
+
+    :return: view_po_history.html
+    """
+    pos = POHistory.query.all()
+    return render_template("view_po_history.html", pos=pos)
+
+@app.route("/create_po", methods=['GET', 'POST'])
+def create_po():
+    """ Renders Create Purchase Order page
+
+    :return: create_po.html
+    """
+    if request.method == "GET":
+        return render_template("create_po.html")
+    part = request.form["part"]
+    quantity = float(request.form["quantity"])
+    existing_part = Part.query.filter_by(part=part).first()
+    if existing_part:
+        existing_part.quantity += quantity
+        price_per_unit = part.price_per_unit
+        existing_part.value += quantity * price_per_unit
+    else:
+        vendor = Vendor.query.filter_by(part=part).first()
+        price_per_unit = vendor.price
+        value = quantity * price_per_unit
+        new_parts = Part(part, vendor.price, quantity, value)
+        db.session.add(new_parts)
+    date = str(datetime.date.today())
+    total = quantity * price_per_unit
+    new_po = POHistory(date, supplier, part, quantity, price_per_unit, total):
+    db.session.add(new_po)
+    db.session.commit()
+    return redirect("/view_inventory")

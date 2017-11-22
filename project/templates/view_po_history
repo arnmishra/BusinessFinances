@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Purchase Order History</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Supplier</th>
+            <th>Quantity</th>
+            <th>Price/Unit</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for po in pos %}
+              <tr>
+                <td> {{ po.date }}</td>
+                <td> {{ po.supplier }}</td>
+                <td> $ {{ po.part }}</td>
+                <td> {{ po.quantity }}</td>
+                <td> {{ po.price_per_unit }}</td>
+                <td> {{ po.total }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>
