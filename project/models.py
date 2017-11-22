@@ -100,7 +100,7 @@ class Vendor(db.Model):
                 self.state, self.zip_code)
 
 class PayrollEvents(db.Model):
-    """ PayrollEvents Model with all the different payroll events that happen. """
+    """ PayrollEvents Model with all the different payroll events that happen stored. """
     id = db.Column(db.Integer, primary_key=True)
     salary = db.Column(db.Integer)
     bounce = db.Column(db.Integer)

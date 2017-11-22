@@ -1,18 +1,67 @@
 from project import app, db
-from models import Employee, Customer, Vendor, PayrollEvents
+from models import Employee, Customer, Vendor, PayrollEvents, IncomeStatement, BalanceSheet
 from flask import render_template, url_for, request, redirect
 from project.scripts.taxes import calculate_social_security_tax, calculate_medicare_tax, calculate_federal_tax, calculate_state_tax
 
+initialized = False
+income_statement = {"sales": 0, "cogs": 0, "payroll": 0, "payroll_withholding": 0, "bills": 0, "annual_expenses": 0,
+                    "other_income": 0}
+balance_sheet = {"cash": 0, "accounts_receivable": 0, "inventory": 0, "land": 0, "equipment": 0, "furniture": 0, 
+                "accounts_payable": 0, "notes_payable": 0, "accruals": 0, "mortgage": 0, "net_worth": 0}
+
 @app.route("/", methods=['GET'])
 def index():
-    """ Renders Home page
-    :return: index.html
+    """ Renders either business initialization page or home page depending on status
+
+    :return: initialize business or home page
     """
-    return render_template("index.html")
+    if not initialized:
+        initialized = True
+        redirect("/initialize_business")
+    else:
+        redirect("/home")
+
+@app.route("/initialize_business", methods=['GET', 'POST'])
+def initialize_business():
+    """ Renders the business initialization page to get income sheet/balance statement
+    information prior to starting the business 
+
+    :return: initialize_business.html
+    """
+    if request.method == "GET":
+        return render_template("initialize_business.html")
+    income_statement["sales"] = request.form["sales"]
+    income_statement["cogs"] = request.form["cogs"]
+    income_statement["payroll"] = request.form["payroll"]
+    income_statement["payroll_withholding"] = request.form["payroll_withholding"]
+    income_statement["bills"] = request.form["bills"]
+    income_statement["annual_expenses"] = request.form["annual_expenses"]
+    income_statement["other_income"] = request.form["other_income"]
+    balance_sheet["cash"] = request.form["cash"]
+    balance_sheet["accounts_receivable"] = request.form["accounts_receivable"]
+    balance_sheet["inventory"] = request.form["inventory"]
+    balance_sheet["land"] = request.form["land"]
+    balance_sheet["equipment"] = request.form["equipment"]
+    balance_sheet["furniture"] = request.form["furniture"]
+    balance_sheet["accounts_payable"] = request.form["accounts_payable"]
+    balance_sheet["notes_payable"] = request.form["notes_payable"]
+    balance_sheet["accruals"] = request.form["accruals"]
+    balance_sheet["mortgage"] = request.form["mortgage"]
+    balance_sheet["net_worth"] = request.form["net_worth"]
+    redirect("/home")
+
+@app.route("/home", methods=['GET'])
+def home():
+    """ Renders the home page
+
+    :return: home.html
+    """
+    return render_template("home.html")
 
 @app.route("/view_employees", methods=['GET'])
 def view_employees():
     """ Renders Employee View page
+
     :return: view_employees.html
     """
     employees = Employee.query.all()
@@ -51,6 +100,7 @@ def add_employee():
 @app.route("/view_customers", methods=['GET'])
 def view_customers():
     """ Renders Customer View page
+
     :return: view_customers.html
     """
     customers = Customer.query.all()
@@ -81,6 +131,7 @@ def add_customer():
 @app.route("/view_vendors", methods=['GET'])
 def view_vendors():
     """ Renders Vendor View page
+
     :return: view_vendors.html
     """
     vendors = Vendor.query.all()
@@ -134,7 +185,40 @@ def pay_employees():
 @app.route("/view_payroll_events", methods=['GET'])
 def view_payroll_events():
     """ Renders Payroll Events page
+
     :return: view_payroll_events.html
     """
     payroll_events = PayrollEvents.query.all()
     return render_template("view_payroll_events.html", payroll_events=payroll_events)
+
+@app.route("/view_pl_statement", methods=['GET'])
+def view_pl_statement():
+    """ Renders P&L (Income) Statement page
+
+    :return: view_pl_statement.html
+    """
+    gross_profit = income_statement["sales"] + income_statement["cogs"]
+    total_expenses = income_statement["payroll"] + income_statement["payroll_withholding"] 
+    operating_income = gross_profit - total_expenses
+    income_taxes = operating_income * 0.07 # Illinois Corporate Tax Rate = 7%: http://www.chicagotribune.com/news/ct-illinois-income-tax-hike-2017-htmlstory.html
+    net_income = operating_income - income_taxes
+
+    return render_template("view_pl_statement.html", income_statement=income_statement, operating_income=operating_income,
+            total_expenses=total_expenses, gross_profit=gross_profit, income_taxes=income_taxes, net_income=net_income)
+
+@app.route("/view_balance_sheet", methods=['GET'])
+def view_balance_sheet():
+    """ Renders Balance Sheet page
+
+    :return: view_balance_sheet.html
+    """
+    total_current_assets = balance_sheet["cash"] + balance_sheet["accounts_receivable"] + balance_sheet["inventory"]
+    total_fixed_assets = balance_sheet["land"] + balance_sheet["equipment"] + balance_sheet["furniture"]
+    total_assets = total_current_assets + total_fixed_assets
+    total_current_liabilities = balance_sheet["accounts_payable"] + balance_sheet["notes_payable"] + balance_sheet["accruals"]
+    total_long_term_debt = balance_sheet["mortgage"]
+    total_liabilities_net_worth = total_current_liabilities + total_long_term_debt + balance_sheet["net_worth"]
+
+    return render_template("view_balance_sheet.html", balance_sheet=balance_sheet, total_current_assets=total_current_assets,
+            total_fixed_assets=total_fixed_assets, total_assets=total_assets, total_long_term_debt=total_long_term_debt, 
+            total_current_liabilities=total_current_liabilities, total_liabilities_net_worth=total_liabilities_net_worth)
