@@ -30,24 +30,24 @@ def initialize_business():
     """
     if request.method == "GET":
         return render_template("initialize_business.html")
-    income_statement["sales"] = request.form["sales"]
-    income_statement["cogs"] = request.form["cogs"]
-    income_statement["payroll"] = request.form["payroll"]
-    income_statement["payroll_withholding"] = request.form["payroll_withholding"]
-    income_statement["bills"] = request.form["bills"]
-    income_statement["annual_expenses"] = request.form["annual_expenses"]
-    income_statement["other_income"] = request.form["other_income"]
-    balance_sheet["cash"] = request.form["cash"]
-    balance_sheet["accounts_receivable"] = request.form["accounts_receivable"]
-    balance_sheet["inventory"] = request.form["inventory"]
-    balance_sheet["land"] = request.form["land"]
-    balance_sheet["equipment"] = request.form["equipment"]
-    balance_sheet["furniture"] = request.form["furniture"]
-    balance_sheet["accounts_payable"] = request.form["accounts_payable"]
-    balance_sheet["notes_payable"] = request.form["notes_payable"]
-    balance_sheet["accruals"] = request.form["accruals"]
-    balance_sheet["mortgage"] = request.form["mortgage"]
-    balance_sheet["net_worth"] = request.form["net_worth"]
+    income_statement["sales"] = float(request.form["sales"])
+    income_statement["cogs"] = float(request.form["cogs"])
+    income_statement["payroll"] = float(request.form["payroll"])
+    income_statement["payroll_withholding"] = float(request.form["payroll_withholding"])
+    income_statement["bills"] = float(request.form["bills"])
+    income_statement["annual_expenses"] = float(request.form["annual_expenses"])
+    income_statement["other_income"] = float(request.form["other_income"])
+    balance_sheet["cash"] = float(request.form["cash"])
+    balance_sheet["accounts_receivable"] = float(request.form["accounts_receivable"])
+    balance_sheet["inventory"] = float(request.form["inventory"])
+    balance_sheet["land"] = float(request.form["land"])
+    balance_sheet["equipment"] = float(request.form["equipment"])
+    balance_sheet["furniture"] = float(request.form["furniture"])
+    balance_sheet["accounts_payable"] = float(request.form["accounts_payable"])
+    balance_sheet["notes_payable"] = float(request.form["notes_payable"])
+    balance_sheet["accruals"] = float(request.form["accruals"])
+    balance_sheet["mortgage"] = float(request.form["mortgage"])
+    balance_sheet["net_worth"] = float(request.form["net_worth"])
     return redirect("/home")
 
 @app.route("/home", methods=['GET'])
@@ -201,7 +201,7 @@ def view_pl_statement():
     total_expenses = income_statement["payroll"] + income_statement["payroll_withholding"] 
     operating_income = gross_profit - total_expenses
     income_taxes = operating_income * 0.07 # Illinois Corporate Tax Rate = 7%: http://www.chicagotribune.com/news/ct-illinois-income-tax-hike-2017-htmlstory.html
-    net_income = operating_income - income_taxes
+    net_income = operating_income + income_statement["other_income"] - income_taxes
 
     return render_template("view_pl_statement.html", income_statement=income_statement, operating_income=operating_income,
             total_expenses=total_expenses, gross_profit=gross_profit, income_taxes=income_taxes, net_income=net_income)
@@ -217,8 +217,10 @@ def view_balance_sheet():
     total_assets = total_current_assets + total_fixed_assets
     total_current_liabilities = balance_sheet["accounts_payable"] + balance_sheet["notes_payable"] + balance_sheet["accruals"]
     total_long_term_debt = balance_sheet["mortgage"]
-    total_liabilities_net_worth = total_current_liabilities + total_long_term_debt + balance_sheet["net_worth"]
+    total_liabilities = total_current_liabilities + total_long_term_debt
+    total_liabilities_net_worth = total_liabilities + balance_sheet["net_worth"]
 
     return render_template("view_balance_sheet.html", balance_sheet=balance_sheet, total_current_assets=total_current_assets,
             total_fixed_assets=total_fixed_assets, total_assets=total_assets, total_long_term_debt=total_long_term_debt, 
-            total_current_liabilities=total_current_liabilities, total_liabilities_net_worth=total_liabilities_net_worth)
+            total_liabilities=total_liabilities, total_current_liabilities=total_current_liabilities, 
+            total_liabilities_net_worth=total_liabilities_net_worth)

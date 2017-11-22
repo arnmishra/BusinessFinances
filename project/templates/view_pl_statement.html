@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<title>P&L Statement</title>
+	<link rel="stylesheet" href="static/css/three_column_styles.css">
+	</head>
+	<body>
+		<h1>P&L (Income) Statement</h1>
+		<div class="row">
+			<div class="column">
+				Sales <br>
+				COGS <br>
+				<b>Gross Profit</b> <br>
+ 				<br>
+				Payroll <br>
+				Payroll Witholdings <br>
+				Bills <br>
+				Annual Expenses <br>
+				<b>Total Expenses</b> <br>
+ 				<br>
+				Other Income <br>
+				Operating Income <br>
+				Income Taxes <br>
+				<b>Net Income</b> <br>
+			</div>
+			<div class = "column">
+				{{ income_statement["sales"] }} <br>
+				{{ income_statement["cogs"] }} <br>
+				{{ gross_profit }} <br>
+ 				<br>
+				{{ income_statement["payroll"] }} <br>
+				{{ income_statement["payroll_withholding"] }} <br>
+				{{ income_statement["bills"] }} <br>
+				{{ income_statement["annual_expenses"] }} <br>
+				{{ total_expenses }} <br>
+ 				<br>
+				{{ income_statement["other_income"] }} <br>
+				{{ operating_income }} <br>
+				{{ income_taxes }} <br>
+				{{ net_income }} <br>
+			</div>
+		</div>
+	</body>
+</html>

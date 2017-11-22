@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+	<meta charset="UTF-8">
+	<title>Balance Sheet</title>
+	<link rel="stylesheet" href="static/css/four_column_styles.css">
+	</head>
+	<body>
+		<h1>Balance Sheet</h1>
+		<div class="row">
+			<div class="column">
+				Cash <br>
+				Accounts Receivable <br>
+				Inventory <br>
+				<b>Total Current Assets</b> <br>
+				<br>
+				Land/Buildings <br>
+				Equipment <br>
+				Furniture and Fixtures <br>
+				<b>Total Fixed Assets</b> <br>
+				<br><br><br>
+				<b>Total Assets</b> <br>
+			</div>
+			<div class = "column">
+				{{ balance_sheet["cash"] }} <br>
+				{{ balance_sheet["accounts_receivable"] }} <br>
+				{{ balance_sheet["inventory"] }} <br>
+				{{ total_current_assets }} <br>
+				<br>
+				{{ balance_sheet["land"] }} <br>
+				{{ balance_sheet["equipment"] }} <br>
+				{{ balance_sheet["furniture"] }} <br>
+				{{ total_fixed_assets }} <br>
+				<br><br><br>
+				{{ total_assets }} <br>
+			</div>
+			<div class="column">
+				Accounts Payable <br>
+				Notes Payable <br>
+				Accruals <br>
+				<b>Total Current Liabilities</b> <br>
+				<br>
+				Mortgage <br>
+				<b>Total Long Term Debt</b> <br>
+				<br>
+				<b>Total Liabilites</b> <br>
+				<br>
+				<b>Net Worth</b> <br>
+				<br>
+				<b>Total Liabilities & Net Worth</b> <br>
+			</div>
+			<div class="column">
+				{{ balance_sheet["accounts_payable"] }} <br>
+				{{ balance_sheet["notes_payable"] }} <br>
+				{{ balance_sheet["accruals"] }} <br>
+				{{ total_current_liabilities }} <br>
+				<br>
+				{{ balance_sheet["mortgage"] }} <br>
+				{{ total_long_term_debt }} <br>
+				<br>
+				{{ total_liabilities }} <br>
+				<br>
+				{{ balance_sheet["net_worth"] }} <br>
+				<br>
+				{{ total_liabilities_net_worth }} <br>
+			</div>
+		</div>
+	</body>
+</html>
