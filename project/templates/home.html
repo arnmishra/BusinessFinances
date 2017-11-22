@@ -29,6 +29,7 @@
 				<a href="/build_units" class="button">Build Units</a> <br> <br>
 			</div>
 		</div>
+		<br>
 		<div class="row">
 			<div class="column">
 				<a href="/view_pl_statement" class="button">View the P&L</a> <br> <br>
@@ -36,6 +37,22 @@
 			<div class="column">
 				<a href="/view_balance_sheet" class="button">View the Balance</a> <br> <br>
 			</div>
+			<div class="column">
+				<button id="change_date" class="button">Increment Date From <span id="date_val">{{ date }}</span></button><br><br>
+			</div>
 		</div>
+		<div id="hi"></div>
 	</body>
+	<script src="static/js/jquery.js"></script>
+	<script type="text/javascript">
+		$("#change_date").click(function() {
+			$.ajax({
+	            url: "/increment_date",
+	            type: "POST",
+	            success: function(resp){
+	                $('span#date_val').html(resp.date);
+	            }
+	        });
+		});
+   </script>
 </html>

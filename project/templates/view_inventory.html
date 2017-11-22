@@ -13,6 +13,7 @@
             <th>Price Per Unit</th>
             <th>Quantity</th>
             <th>Value</th>
+            <th>Re-order</th>
           </tr>
         </thead>
         <tbody>
@@ -23,6 +24,7 @@
                 <td>{{ item.price_per_unit }}</td>
                 <td>{{ item.quantity }}</td>
                 <td> {{ item.value }}</td>
+                <td><button> Re-order </button></td>
               </tr>
             {% endfor %}
         </tbody>
