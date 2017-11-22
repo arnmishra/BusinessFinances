@@ -9,10 +9,12 @@
       <table>
         <thead>
           <tr>
+            <th>PO Number</th>
             <th>Date</th>
             <th>Supplier</th>
+            <th>Part</th>
             <th>Quantity</th>
-            <th>Price/Unit</th>
+            <th>Price/Part</th>
             <th>Total</th>
           </tr>
         </thead>
@@ -20,9 +22,10 @@
           <tr>
             {% for po in pos %}
               <tr>
+                <td> {{ po.id }}</td>
                 <td> {{ po.date }}</td>
                 <td> {{ po.supplier }}</td>
-                <td> $ {{ po.part }}</td>
+                <td> {{ po.part }}</td>
                 <td> {{ po.quantity }}</td>
                 <td> {{ po.price_per_unit }}</td>
                 <td> {{ po.total }}</td>

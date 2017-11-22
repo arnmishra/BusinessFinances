@@ -1,10 +1,11 @@
 import datetime
 from project import app, db
-from models import Employee, Customer, Vendor, PayrollEvents
+from models import Employee, Customer, Vendor, PayrollEvents, Parts, InvoiceHistory, POHistory
 from flask import render_template, url_for, request, redirect
 from project.scripts.taxes import calculate_social_security_tax, calculate_medicare_tax, calculate_federal_tax, calculate_state_tax
 
 initialized = False
+cost_of_units = 2.5
 income_statement = {"sales": 0, "cogs": 0, "payroll": 0, "payroll_withholding": 0, "bills": 0, "annual_expenses": 0,
                     "other_income": 0}
 balance_sheet = {"cash": 0, "accounts_receivable": 0, "inventory": 0, "land": 0, "equipment": 0, "furniture": 0, 
@@ -254,23 +255,48 @@ def create_po():
     :return: create_po.html
     """
     if request.method == "GET":
-        return render_template("create_po.html")
+        vendors = Vendor.query.all()
+        return render_template("create_po.html", vendors=vendors)
     part = request.form["part"]
     quantity = float(request.form["quantity"])
-    existing_part = Part.query.filter_by(part=part).first()
+    existing_part = Parts.query.filter_by(part=part).first()
+    vendor = Vendor.query.filter_by(part=part).first()
     if existing_part:
         existing_part.quantity += quantity
         price_per_unit = part.price_per_unit
         existing_part.value += quantity * price_per_unit
     else:
-        vendor = Vendor.query.filter_by(part=part).first()
         price_per_unit = vendor.price
         value = quantity * price_per_unit
-        new_parts = Part(part, vendor.price, quantity, value)
+        new_parts = Parts(part, vendor.price, quantity, value)
         db.session.add(new_parts)
     date = str(datetime.date.today())
     total = quantity * price_per_unit
-    new_po = POHistory(date, supplier, part, quantity, price_per_unit, total):
+    new_po = POHistory(date, vendor.company, part, quantity, price_per_unit, total)
     db.session.add(new_po)
     db.session.commit()
-    return redirect("/view_inventory")
+    return redirect("/view_po_history")
+
+@app.route("/create_invoice", methods=['GET', 'POST'])
+def create_invoice():
+    """ Renders Create Invoice page
+
+    :return: create_invoice.html
+    """
+    global cost_of_units
+    if request.method == "GET":
+        customers = Customer.query.all()
+        num_available = get_num_available()
+        return render_template("create_invoice.html", customers=customers, num_available=num_available)
+    customer = request.form["customer"]
+    quantity = request.form["quantity"]
+    date = str(datetime.date.today())
+    total = cost_of_units * quantity
+    InvoiceHistory(date, customer, quantity, cost_of_units, total)
+
+def get_num_available():
+    """ Gets the number of complete units available
+
+    :return: number of available units
+    """
+    return 0
