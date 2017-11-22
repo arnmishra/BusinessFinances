@@ -1,5 +1,5 @@
 from project import app, db
-from models import Employee, Customer, Vendor, PayrollEvents, IncomeStatement, BalanceSheet
+from models import Employee, Customer, Vendor, PayrollEvents
 from flask import render_template, url_for, request, redirect
 from project.scripts.taxes import calculate_social_security_tax, calculate_medicare_tax, calculate_federal_tax, calculate_state_tax
 
@@ -15,11 +15,11 @@ def index():
 
     :return: initialize business or home page
     """
+    global initialized
     if not initialized:
         initialized = True
-        redirect("/initialize_business")
-    else:
-        redirect("/home")
+        return redirect("/initialize_business")
+    return redirect("/home")
 
 @app.route("/initialize_business", methods=['GET', 'POST'])
 def initialize_business():
@@ -48,7 +48,7 @@ def initialize_business():
     balance_sheet["accruals"] = request.form["accruals"]
     balance_sheet["mortgage"] = request.form["mortgage"]
     balance_sheet["net_worth"] = request.form["net_worth"]
-    redirect("/home")
+    return redirect("/home")
 
 @app.route("/home", methods=['GET'])
 def home():

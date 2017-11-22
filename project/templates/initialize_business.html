@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Add Employee</title>
+        <link href="static/css/form.css" rel="stylesheet">
+        <link rel="stylesheet" href="static/css/styles.css">
+    </head>
+    <body>
+        <form action="/initialize_business" method="POST">
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <br>
+            <header><h1>Current Business Information</h1></header>
+            <div class="help">{{ error }}</div>
+            <div class="row">
+                <div class="column">
+                    <h3>Income Statement</h3>
+                    <label>Sales</label>
+                    <input id="sales" name="sales" type="number" step="0.01" value=0 required>
+                    <label>Cost of Goods Sold</label>
+                    <input id="cogs" name="cogs" type="number" step="0.01" value=0 required>
+                    <label>Payroll</label>
+                    <input id="payroll" name="payroll" type="number" step="0.01" value=0 required>
+                    <label>Payroll Withholding</label>
+                    <input id="payroll_withholding" name="payroll_withholding" type="number" step="0.01" value=0 required>
+                    <label>Bills</label>
+                    <input id="bills" name="bills" type="number" step="0.01" value=0 required>
+                    <label>Annual Expenses</label>
+                    <input id="annual_expenses" name="annual_expenses" type="number" step="0.01" value=0 required>
+                    <label>Other Income</label>
+                    <input id="other_income" name="other_income" type="number" step="0.01" value=0 required>
+                </div>
+                <div class="column">
+                    <h3>Balance Sheet</h3>
+                    <label>Cash</label>
+                    <input id="cash" name="cash" type="number" step="0.01" value=0 required>
+                    <label>Accounts Receivable</label>
+                    <input id="accounts_receivable" name="accounts_receivable" type="number" step="0.01" value=0 required>
+                    <label>Inventory</label>
+                    <input id="inventory" name="inventory" type="number" step="0.01" value=0 required>
+                    <label>Land/Buildings</label>
+                    <input id="land" name="land" type="number" step="0.01" value=0 required>
+                    <label>Equipment</label>
+                    <input id="equipment" name="equipment" type="number" step="0.01" value=0 required>
+                    <label>Furniture</label>
+                    <input id="furniture" name="furniture" type="number" step="0.01" value=0 required>
+                    <label>Accounts Payable</label>
+                    <input id="accounts_payable" name="accounts_payable" type="number" step="0.01" value=0 required>
+                    <label>Notes Payable</label>
+                    <input id="notes_payable" name="notes_payable" type="number" step="0.01" value=0 required>
+                    <label>Accruals</label>
+                    <input id="accruals" name="accruals" type="number" step="0.01" value=0 required>
+                    <label>Mortgage</label>
+                    <input id="mortgage" name="mortgage" type="number" step="0.01" value=0 required>
+                    <label>Net Worth</label>
+                    <input id="net_worth" name="net_worth" type="number" step="0.01" value=0 required>
+                </div>
+                <button>Confirm Business Information</button>
+            </form>
+    </body>
+</html>
