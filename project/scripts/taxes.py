@@ -89,4 +89,4 @@ def calculate_state_tax(salary, state_line1_withholdings, state_line2_withholdin
 	:param state_line2_withholdings: employee's line 2 withholdings (i.e. old age/blind)
 	:return: Illinois State Tax Withholdings
 	"""
-	return 0.0495 * (salary - (state_line1_withholdings * 2175 + state_line2_withholdings * 1000)/NUMBER_PAY_PERIODS_YEAR)
+	return max(0,0.0495 * (salary - (state_line1_withholdings * 2175 + state_line2_withholdings * 1000)/NUMBER_PAY_PERIODS_YEAR))

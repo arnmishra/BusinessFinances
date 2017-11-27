@@ -8,19 +8,12 @@
     </head>
     <body>
         <form action="/initialize_business" method="POST">
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
+            <br><br><br><br><br><br><br><br>
             <header><h1>Current Business Information</h1></header>
             <div class="help">{{ error }}</div>
             <div class="row">
                 <div class="column">
-                    <h3>Income Statement</h3>
+                    <label><h3>Income Statement</h3></label>
                     <label>Sales</label>
                     <input id="sales" name="sales" type="number" step="0.01" value=0 required>
                     <label>Cost of Goods Sold</label>
@@ -37,7 +30,7 @@
                     <input id="other_income" name="other_income" type="number" step="0.01" value=0 required>
                 </div>
                 <div class="column">
-                    <h3>Balance Sheet</h3>
+                    <label><h3>Balance Sheet</h3></label>
                     <label>Cash</label>
                     <input id="cash" name="cash" type="number" step="0.01" value=0 required>
                     <label>Accounts Receivable</label>

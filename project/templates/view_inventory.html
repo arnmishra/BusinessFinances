@@ -6,6 +6,37 @@
   </head>
   <body>
     <p>
+      {% if units|length > 0 %}
+      <h1>Completed Units</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Unit Name</th>
+            <th>Price Per Unit</th>
+            <th>Cost Per Unit</th>
+            <th>Quantity</th>
+            <th>Build More</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for unit in units %}
+              <tr>
+                <td>{{ unit.unit_name }}</td>
+                <td>{{ unit.price_per_unit }}</td>
+                <td> {{ unit.cost_per_unit }}</td>
+                <td>{{ unit.quantity }}</td>
+                <td>
+                  <form action="/build_more" method="GET">
+                  <button> Build More </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+      {% endif %}
+      <h1>Existing Parts</h1>
       <table>
         <thead>
           <tr>
@@ -24,7 +55,13 @@
                 <td>{{ item.price_per_unit }}</td>
                 <td>{{ item.quantity }}</td>
                 <td> {{ item.value }}</td>
-                <td><button> Re-order </button></td>
+                {% if item.quantity < 500 %}
+                  <td>
+                    <form action="/create_po" method="GET">
+                    <button> Re-order </button>
+                    </form>
+                  </td>
+                {% endif %}
               </tr>
             {% endfor %}
         </tbody>

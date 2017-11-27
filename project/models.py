@@ -53,7 +53,7 @@ class Customer(db.Model):
     state = db.Column(db.String)
     zip_code = db.Column(db.Integer)
 
-    def __init__(self, company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code, price):
+    def __init__(self, company, last_name, first_name, address_line_1, address_line_2, city, state, zip_code):
         self.company = company
         self.last_name = last_name
         self.first_name = first_name
@@ -132,7 +132,7 @@ class Parts(db.Model):
     part = db.Column(db.Integer)
     price_per_unit = db.Column(db.Integer)
     quantity = db.Column(db.Integer)
-    value = db.Column(db.String)
+    value = db.Column(db.Integer)
 
     def __init__(self, part, price_per_unit, quantity, value):
         self.part = part
@@ -144,25 +144,45 @@ class Parts(db.Model):
         return "<Parts(part='%d', price_per_unit='%d', quantity='%d', value='%d')>" \
                % (self.part, self.price_per_unit, self.quantity, self.value)
 
+class Units(db.Model):
+    """ Units Model keeps an inventory of how many complete units of each product the company has. """
+    id = db.Column(db.Integer, primary_key=True)
+    unit_name = db.Column(db.Integer)
+    price_per_unit = db.Column(db.Integer)
+    cost_per_unit = db.Column(db.Integer)
+    quantity = db.Column(db.Integer)
+
+    def __init__(self, unit_name, price_per_unit, cost_per_unit, quantity):
+        self.unit_name = unit_name
+        self.price_per_unit = price_per_unit
+        self.cost_per_unit = cost_per_unit
+        self.quantity = quantity
+
+    def __repr__(self):
+        return "<Units(unit_name='%d', cost_per_unit='%d', price_per_unit='%d', quantity='%d')>" \
+               % (self.unit_name, self.cost_per_unit, self.price_per_unit, self.quantity)
+
 class InvoiceHistory(db.Model):
     """ InvoiceHistory Model keeps the history of past invoices """
     id = db.Column(db.Integer, primary_key=True)
     date = db.Column(db.Integer)
     customer = db.Column(db.String)
+    unit = db.Column(db.String)
     quantity = db.Column(db.Integer)
     price_per_unit = db.Column(db.Integer)
     total = db.Column(db.Integer)
 
-    def __init__(self, date, customer, quantity, price_per_unit, total):
+    def __init__(self, date, customer, unit, quantity, price_per_unit, total):
         self.date = date
         self.customer = customer
+        self.unit = unit
         self.quantity = quantity
         self.price_per_unit = price_per_unit
         self.total = total
 
     def __repr__(self):
-        return "<InvoiceHistory(date='%d', customer='%d', quantity='%d', price_per_unit='%d', total='%d')>" \
-               % (self.date, self.customer, self.quantity, self.price_per_unit, self.total)
+        return "<InvoiceHistory(date='%s', customer='%s', unit='%s', quantity='%d', price_per_unit='%d', total='%d')>" \
+               % (self.date, self.customer, self.unit, self.quantity, self.price_per_unit, self.total)
 
 class POHistory(db.Model):
     """ POHistory Model keeps the history of past invoices """

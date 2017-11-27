@@ -1,11 +1,13 @@
 from project import app, db
-from models import Employee, Customer, Vendor, PayrollEvents, Parts, InvoiceHistory, POHistory
+from models import Employee, Customer, Vendor, PayrollEvents, Parts, InvoiceHistory, POHistory, Units
 from flask import render_template, url_for, request, redirect, jsonify
 from project.scripts.taxes import calculate_social_security_tax, calculate_medicare_tax, calculate_federal_tax, calculate_state_tax
 
-DATE = 0
+DATE = 1
+MONTHS = [["Feb", 31], ["Mar", 28], ["Apr", 31], ["May", 30], ["June", 31], ["July", 30], ["Aug", 31], 
+        ["Sept", 31], ["Oct", 30], ["Nov", 31], ["Dec", 30], ["Jan", 31]]
+PAID_OFF = "Jan"
 INITIALIZED = False
-COST_OF_UNITS = 2.5
 income_statement = {"sales": 0, "cogs": 0, "payroll": 0, "payroll_withholding": 0, "bills": 0, "annual_expenses": 0,
                     "other_income": 0}
 balance_sheet = {"cash": 0, "accounts_receivable": 0, "inventory": 0, "land": 0, "equipment": 0, "furniture": 0, 
@@ -25,8 +27,8 @@ def index():
 
 @app.route("/initialize_business", methods=['GET', 'POST'])
 def initialize_business():
-    """ Renders the business initialization page to get income sheet/balance statement
-    information prior to starting the business 
+    """ Renders the business initialization page to get information about
+    the income statement, balance sheet, and units prior to starting the business 
 
     :return: initialize_business.html
     """
@@ -62,7 +64,8 @@ def home():
     if not INITIALIZED:
         INITIALIZED = True
         return redirect("/initialize_business")
-    return render_template("home.html", date=DATE)
+    str_date = get_str_date()
+    return render_template("home.html", date=str_date)
 
 @app.route("/view_employees", methods=['GET'])
 def view_employees():
@@ -175,14 +178,14 @@ def pay_employees():
     employee_ids = request.form.getlist("employee")
     for employee_id in employee_ids:
         employee = Employee.query.filter_by(id=employee_id).first()
-        salary = employee.salary
+        monthly_salary = float(employee.salary/12.0)
         name = '%s %s' % (employee.first_name, employee.last_name)
-        social_security_tax = calculate_social_security_tax(salary)
-        medicare_tax = calculate_medicare_tax(salary)
-        federal_tax_withholding = calculate_federal_tax(salary, employee.marital_status, employee.federal_withholdings)
-        state_tax_withholding = calculate_state_tax(salary, employee.state_line1_withholdings, employee.state_line2_withholdings)
-        total_paid = salary - social_security_tax - federal_tax_withholding - medicare_tax - state_tax_withholding
-        payroll_event = PayrollEvents(salary, 0, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, name, total_paid)
+        social_security_tax = calculate_social_security_tax(monthly_salary)
+        medicare_tax = calculate_medicare_tax(monthly_salary)
+        federal_tax_withholding = calculate_federal_tax(monthly_salary, employee.marital_status, employee.federal_withholdings)
+        state_tax_withholding = calculate_state_tax(monthly_salary, employee.state_line1_withholdings, employee.state_line2_withholdings)
+        total_paid = monthly_salary - social_security_tax - federal_tax_withholding - medicare_tax - state_tax_withholding
+        payroll_event = PayrollEvents(monthly_salary, 0, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, name, total_paid)
         db.session.add(payroll_event)
         income_statement["payroll"] += total_paid
         income_statement["payroll_withholding"] += social_security_tax + federal_tax_withholding + medicare_tax + state_tax_withholding
@@ -206,8 +209,8 @@ def view_pl_statement():
 
     :return: view_pl_statement.html
     """
-    gross_profit = income_statement["sales"] + income_statement["cogs"]
-    total_expenses = income_statement["payroll"] + income_statement["payroll_withholding"] 
+    gross_profit = income_statement["sales"] - income_statement["cogs"]
+    total_expenses = income_statement["payroll"] + income_statement["bills"]  + income_statement["annual_expenses"]
     operating_income = gross_profit - total_expenses
     income_taxes = operating_income * 0.07 # Illinois Corporate Tax Rate = 7%: http://www.chicagotribune.com/news/ct-illinois-income-tax-hike-2017-htmlstory.html
     net_income = operating_income + income_statement["other_income"] - income_taxes
@@ -240,8 +243,9 @@ def view_inventory():
 
     :return: view_inventory.html
     """
+    units = Units.query.all()
     inventory = Parts.query.all()
-    return render_template("view_inventory.html", inventory=inventory)
+    return render_template("view_inventory.html", units=units, inventory=inventory)
 
 @app.route("/view_po_history", methods=['GET'])
 def view_po_history():
@@ -256,7 +260,7 @@ def view_po_history():
 def create_po():
     """ Renders Create Purchase Order page
 
-    :return: create_po.html
+    :return: view_po_history.html
     """
     global DATE
     if request.method == "GET":
@@ -268,8 +272,8 @@ def create_po():
     vendor = Vendor.query.filter_by(part=part).first()
     if existing_part:
         existing_part.quantity += quantity
-        price_per_unit = part.price_per_unit
-        existing_part.value += quantity * price_per_unit
+        existing_part.value = existing_part.quantity*existing_part.price_per_unit
+        price_per_unit = existing_part.price_per_unit
     else:
         price_per_unit = vendor.price
         value = quantity * price_per_unit
@@ -280,35 +284,102 @@ def create_po():
     new_po = POHistory(date, vendor.company, part, quantity, price_per_unit, total)
     db.session.add(new_po)
     db.session.commit()
+    balance_sheet["accounts_payable"] += total
+    balance_sheet["inventory"] += total
     return redirect("/view_po_history")
+
+@app.route("/view_invoice_history", methods=['GET'])
+def view_invoice_history():
+    """ Renders Invoice Order History page
+
+    :return: view_invoice_history.html
+    """
+    invoices = InvoiceHistory.query.all()
+    return render_template("view_invoice_history.html", invoices=invoices)
 
 @app.route("/create_invoice", methods=['GET', 'POST'])
 def create_invoice():
     """ Renders Create Invoice page
 
-    :return: create_invoice.html
+    :return: view_invoice_history.html
     """
-    global COST_OF_UNITS, DATE
+    global DATE
     if request.method == "GET":
         customers = Customer.query.all()
-        num_available = get_num_available()
-        return render_template("create_invoice.html", customers=customers, num_available=num_available)
+        units = Units.query.all()
+        return render_template("create_invoice.html", customers=customers, units=units)
     customer = request.form["customer"]
-    quantity = request.form["quantity"]
+    unit_id = request.form["unit"]
+    quantity = float(request.form["quantity"])
+    unit = Units.query.filter_by(id=unit_id).first()
+    unit.quantity -= quantity
     date = DATE
-    total = COST_OF_UNITS * quantity
-    InvoiceHistory(date, customer, quantity, COST_OF_UNITS, total)
+    total = unit.price_per_unit * quantity
+    new_invoice = InvoiceHistory(date, customer, unit.unit_name, quantity, unit.price_per_unit, total)
+    db.session.add(new_invoice)
+    db.session.commit()
+    income_statement["sales"] += total
+    income_statement["cogs"] += quantity * unit.cost_per_unit
+    balance_sheet["accounts_receivable"] += total
+    balance_sheet["net_worth"] += total
+    return redirect("/view_invoice_history")
 
 @app.route("/increment_date", methods=['POST'])
 def increment_date():
     """ Asynchronously Increments the Date """
-    global DATE
+    global DATE, MONTHS
     DATE += 1
-    return jsonify({"date": DATE})
+    str_date = get_str_date()
+    return jsonify({"date": str_date})
 
-def get_num_available():
-    """ Gets the number of complete units available
+@app.route("/build_units", methods=['GET', 'POST'])
+def build_units():
+    """ Build Product Units to Sell 
 
-    :return: number of available units
+    :return: inventory.html 
     """
-    return 0
+    if request.method == "GET":
+        parts = Parts.query.all()
+        return render_template("build_units.html", parts=parts)
+    unit_name = request.form["unit_name"]
+    price_per_unit = float(request.form["price_per_unit"])
+    parts = request.form.getlist("parts")
+    cost_per_unit = 0
+    build_quantity = float(request.form["quantity"])
+    for part in parts:
+        queried_part = Parts.query.filter_by(id=part).first()
+        quantity_per_part = float(request.form[part])
+        queried_part.quantity -= quantity_per_part*build_quantity
+        queried_part.value = queried_part.quantity*queried_part.price_per_unit
+        cost_per_unit += quantity_per_part*queried_part.price_per_unit
+    new_unit = Units(unit_name, price_per_unit, cost_per_unit, build_quantity)
+    db.session.add(new_unit)
+    db.session.commit()
+    return redirect('/view_inventory')
+
+def get_str_date():
+    global DATE
+    calc_year = 2017
+    calc_month = "Jan"
+    calc_date = DATE
+    if calc_date > 365:
+        calc_year += calc_date/365
+        calc_date = calc_date%365
+    for month in MONTHS:
+        if calc_date - month[1] > 0:
+            calc_date = calc_date - month[1]
+            calc_month = month[0]
+        else:
+            break
+    if calc_date == 1:
+        handle_monthly_expenses(calc_month)
+    return "%s %d, %d" % (calc_month, calc_date, calc_year)
+
+def handle_monthly_expenses(month):
+    global PAID_OFF
+    if PAID_OFF == month:
+        return
+    balance_sheet["cash"] = balance_sheet["cash"] + balance_sheet["accounts_receivable"] - balance_sheet["accounts_payable"]
+    balance_sheet["accounts_receivable"] = 0
+    balance_sheet["accounts_payable"] = 0
+    PAID_OFF = month

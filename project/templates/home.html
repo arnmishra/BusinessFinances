@@ -17,9 +17,6 @@
 				<a href="/view_customers" class="button">View Customers</a> <br> <br>
 				<a href="/add_customer" class="button">Add Customer</a> <br> <br>
 				<a href="/create_invoice" class="button">Create Invoice</a> <br> <br>
-				<a href="/view_expense_accounts" class="button">View Expense Accounts</a> <br> <br>
-				<a href="/pay_monthly_bill" class="button">Pay a Fixed Monthly Bill</a> <br> <br>
-				<a href="/view_paid_expenses" class="button">View Paid Expenses</a> <br> <br>
 			</div>
 			<div class="column">
 				<a href="/view_vendors" class="button">View Vendors</a> <br> <br>
@@ -38,14 +35,14 @@
 				<a href="/view_balance_sheet" class="button">View the Balance</a> <br> <br>
 			</div>
 			<div class="column">
-				<button id="change_date" class="button">Increment Date From <span id="date_val">{{ date }}</span></button><br><br>
+				<button id="increment_date" class="button">Increment Date From <span id="date_val">{{ date }}</span></button><br><br>
+				<button id="change_date" class="button">Increase Date By </button><br><br>
 			</div>
 		</div>
-		<div id="hi"></div>
 	</body>
 	<script src="static/js/jquery.js"></script>
 	<script type="text/javascript">
-		$("#change_date").click(function() {
+		$("#increment_date").click(function() {
 			$.ajax({
 	            url: "/increment_date",
 	            type: "POST",
