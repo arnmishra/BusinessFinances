@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Create Invoice</title>
+  </head>
+  <body>
+	  <form action="/create_invoice" method="POST">
+	  	<h3>Select a Customer To Invoice:</h3>
+	    {% for customer in customers %}
+	      <input type="radio" name="customer" value="{{ customer.company }}"> {{ customer.company }} <br>
+	    {% endfor %}
+	    <h3>Select a Product to Purchase</h3>
+	    {% for unit in units %}
+	      <input type = "radio" name="unit" value=" {{ unit.id }}"> {{ unit.unit_name }} (Quantity Available: {{ unit.quantity }}) <br>
+	    {% endfor %}
+	    <br>
+	    Number of Units To Invoice: <input type="number" name="quantity"> <br>
+	    <br>
+	    <button>Create Invoice</button>
+	  </form>
+  </body>
+ </html>

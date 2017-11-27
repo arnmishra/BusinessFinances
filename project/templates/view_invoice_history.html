@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>View Invoice History</title>
+  </head>
+  <body>
+    <p>
+      <table>
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Date</th>
+            <th>Customer</th>
+            <th>Quantity</th>
+            <th>Price/Unit</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            {% for invoice in invoices %}
+              <tr>
+                <td> {{ invoice.id }}</td>
+                <td> {{ invoice.date }}</td>
+                <td> {{ invoice.customer }}</td>
+                <td> {{ invoice.quantity }}</td>
+                <td> {{ invoice.price_per_unit }}</td>
+                <td> {{ invoice.total }}</td>
+              </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    </p>
+  </body>
+</html>
