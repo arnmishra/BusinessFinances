@@ -36,7 +36,7 @@
 			</div>
 			<div class="column">
 				<button id="increment_date" class="button">Increment Date From <span id="date_val">{{ date }}</span></button><br><br>
-				<button id="change_date" class="button">Increase Date By </button><br><br>
+				<button id="change_date" class="button">Increase Date By </button><input type="text" id="num_days"><br><br>
 			</div>
 		</div>
 	</body>
@@ -46,6 +46,16 @@
 			$.ajax({
 	            url: "/increment_date",
 	            type: "POST",
+	            success: function(resp){
+	                $('span#date_val').html(resp.date);
+	            }
+	        });
+		});
+		$("#change_date").click(function() {
+			$.ajax({
+	            url: "/increment_date",
+	            type: "POST",
+	            data: { num_days: $("#num_days").val() },
 	            success: function(resp){
 	                $('span#date_val').html(resp.date);
 	            }

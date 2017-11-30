@@ -5,6 +5,7 @@
     <title>Create Purchase Order</title>
   </head>
   <body>
+  	<button><a href="/">Go Home</a></button>
 	  <form action="/create_po" method="POST">
 	    {% for vendor in vendors %}
 	      <input type="radio" name="part" value="{{ vendor.part }}"> {{ vendor.part }} <br>

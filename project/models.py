@@ -165,7 +165,7 @@ class Units(db.Model):
 class InvoiceHistory(db.Model):
     """ InvoiceHistory Model keeps the history of past invoices """
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Integer)
+    date = db.Column(db.String)
     customer = db.Column(db.String)
     unit = db.Column(db.String)
     quantity = db.Column(db.Integer)
@@ -187,7 +187,7 @@ class InvoiceHistory(db.Model):
 class POHistory(db.Model):
     """ POHistory Model keeps the history of past invoices """
     id = db.Column(db.Integer, primary_key=True)
-    date = db.Column(db.Integer)
+    date = db.Column(db.String)
     supplier = db.Column(db.String)
     part = db.Column(db.Integer)
     quantity = db.Column(db.Integer)

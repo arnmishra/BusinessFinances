@@ -5,6 +5,7 @@
     <title>View Inventory</title>
   </head>
   <body>
+    <button><a href="/">Go Home</a></button>
     <p>
       {% if units|length > 0 %}
       <h1>Completed Units</h1>
@@ -44,7 +45,7 @@
             <th>Price Per Unit</th>
             <th>Quantity</th>
             <th>Value</th>
-            <th>Re-order</th>
+            <th>Re-order (<500)</th>
           </tr>
         </thead>
         <tbody>

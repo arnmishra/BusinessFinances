@@ -6,8 +6,9 @@ from project.scripts.taxes import calculate_social_security_tax, calculate_medic
 DATE = 1
 MONTHS = [["Feb", 31], ["Mar", 28], ["Apr", 31], ["May", 30], ["June", 31], ["July", 30], ["Aug", 31], 
         ["Sept", 31], ["Oct", 30], ["Nov", 31], ["Dec", 30], ["Jan", 31]]
-PAID_OFF = "Jan"
+PAID_OFF = ["Jan", 2017]
 INITIALIZED = False
+ANNUAL_EXPENSE = 0
 income_statement = {"sales": 0, "cogs": 0, "payroll": 0, "payroll_withholding": 0, "bills": 0, "annual_expenses": 0,
                     "other_income": 0}
 balance_sheet = {"cash": 0, "accounts_receivable": 0, "inventory": 0, "land": 0, "equipment": 0, "furniture": 0, 
@@ -32,6 +33,7 @@ def initialize_business():
 
     :return: initialize_business.html
     """
+    global ANNUAL_EXPENSE
     if request.method == "GET":
         return render_template("initialize_business.html")
     income_statement["sales"] = float(request.form["sales"])
@@ -40,6 +42,7 @@ def initialize_business():
     income_statement["payroll_withholding"] = float(request.form["payroll_withholding"])
     income_statement["bills"] = float(request.form["bills"])
     income_statement["annual_expenses"] = float(request.form["annual_expenses"])
+    ANNUAL_EXPENSE = float(request.form["annual_expenses"])
     income_statement["other_income"] = float(request.form["other_income"])
     balance_sheet["cash"] = float(request.form["cash"])
     balance_sheet["accounts_receivable"] = float(request.form["accounts_receivable"])
@@ -178,12 +181,12 @@ def pay_employees():
     employee_ids = request.form.getlist("employee")
     for employee_id in employee_ids:
         employee = Employee.query.filter_by(id=employee_id).first()
-        monthly_salary = float(employee.salary/12.0)
+        monthly_salary = round(float(employee.salary/12.0),2)
         name = '%s %s' % (employee.first_name, employee.last_name)
-        social_security_tax = calculate_social_security_tax(monthly_salary)
-        medicare_tax = calculate_medicare_tax(monthly_salary)
-        federal_tax_withholding = calculate_federal_tax(monthly_salary, employee.marital_status, employee.federal_withholdings)
-        state_tax_withholding = calculate_state_tax(monthly_salary, employee.state_line1_withholdings, employee.state_line2_withholdings)
+        social_security_tax = round(calculate_social_security_tax(monthly_salary),2)
+        medicare_tax = round(calculate_medicare_tax(monthly_salary),2)
+        federal_tax_withholding = round(calculate_federal_tax(monthly_salary, employee.marital_status, employee.federal_withholdings),2)
+        state_tax_withholding = round(calculate_state_tax(monthly_salary, employee.state_line1_withholdings, employee.state_line2_withholdings),2)
         total_paid = monthly_salary - social_security_tax - federal_tax_withholding - medicare_tax - state_tax_withholding
         payroll_event = PayrollEvents(monthly_salary, 0, federal_tax_withholding, state_tax_withholding, social_security_tax, medicare_tax, name, total_paid)
         db.session.add(payroll_event)
@@ -206,17 +209,20 @@ def view_payroll_events():
 @app.route("/view_pl_statement", methods=['GET'])
 def view_pl_statement():
     """ Renders P&L (Income) Statement page
+    Illinois Corporate Tax Rate = 7%: http://www.chicagotribune.com/news/ct-illinois-income-tax-hike-2017-htmlstory.html
 
     :return: view_pl_statement.html
     """
     gross_profit = income_statement["sales"] - income_statement["cogs"]
     total_expenses = income_statement["payroll"] + income_statement["bills"]  + income_statement["annual_expenses"]
     operating_income = gross_profit - total_expenses
-    income_taxes = operating_income * 0.07 # Illinois Corporate Tax Rate = 7%: http://www.chicagotribune.com/news/ct-illinois-income-tax-hike-2017-htmlstory.html
-    net_income = operating_income + income_statement["other_income"] - income_taxes
+    pre_tax_income = income_statement["other_income"] + operating_income
+    income_taxes = round(pre_tax_income * 0.07,2)
+    net_income = pre_tax_income - income_taxes
 
     return render_template("view_pl_statement.html", income_statement=income_statement, operating_income=operating_income,
-            total_expenses=total_expenses, gross_profit=gross_profit, income_taxes=income_taxes, net_income=net_income)
+            total_expenses=total_expenses, gross_profit=gross_profit, income_taxes=income_taxes, date=get_str_date(), 
+            net_income=net_income)
 
 @app.route("/view_balance_sheet", methods=['GET'])
 def view_balance_sheet():
@@ -235,7 +241,7 @@ def view_balance_sheet():
     return render_template("view_balance_sheet.html", balance_sheet=balance_sheet, total_current_assets=total_current_assets,
             total_fixed_assets=total_fixed_assets, total_assets=total_assets, total_long_term_debt=total_long_term_debt, 
             total_liabilities=total_liabilities, total_current_liabilities=total_current_liabilities, 
-            total_liabilities_net_worth=total_liabilities_net_worth)
+            total_liabilities_net_worth=total_liabilities_net_worth, date=get_str_date())
 
 @app.route("/view_inventory", methods=['GET'])
 def view_inventory():
@@ -279,9 +285,8 @@ def create_po():
         value = quantity * price_per_unit
         new_parts = Parts(part, vendor.price, quantity, value)
         db.session.add(new_parts)
-    date = DATE
     total = quantity * price_per_unit
-    new_po = POHistory(date, vendor.company, part, quantity, price_per_unit, total)
+    new_po = POHistory(get_str_date(), vendor.company, part, quantity, price_per_unit, total)
     db.session.add(new_po)
     db.session.commit()
     balance_sheet["accounts_payable"] += total
@@ -313,9 +318,8 @@ def create_invoice():
     quantity = float(request.form["quantity"])
     unit = Units.query.filter_by(id=unit_id).first()
     unit.quantity -= quantity
-    date = DATE
     total = unit.price_per_unit * quantity
-    new_invoice = InvoiceHistory(date, customer, unit.unit_name, quantity, unit.price_per_unit, total)
+    new_invoice = InvoiceHistory(get_str_date(), customer, unit.unit_name, quantity, unit.price_per_unit, total)
     db.session.add(new_invoice)
     db.session.commit()
     income_statement["sales"] += total
@@ -323,14 +327,6 @@ def create_invoice():
     balance_sheet["accounts_receivable"] += total
     balance_sheet["net_worth"] += total
     return redirect("/view_invoice_history")
-
-@app.route("/increment_date", methods=['POST'])
-def increment_date():
-    """ Asynchronously Increments the Date """
-    global DATE, MONTHS
-    DATE += 1
-    str_date = get_str_date()
-    return jsonify({"date": str_date})
 
 @app.route("/build_units", methods=['GET', 'POST'])
 def build_units():
@@ -357,8 +353,24 @@ def build_units():
     db.session.commit()
     return redirect('/view_inventory')
 
+@app.route("/increment_date", methods=['POST'])
+def increment_date():
+    """ Asynchronously Increments the Date """
+    global DATE, MONTHS
+    if "num_days" in request.form:
+        DATE += int(request.form["num_days"])
+    else:
+        DATE += 1
+    str_date = get_str_date()
+    return jsonify({"date": str_date})
+
 def get_str_date():
-    global DATE
+    """ Converts Date to String Version
+    Handles Recurring Expenses depending on the date
+
+    :return: String Representation of Date
+    """
+    global DATE, MONTHS, PAID_OFF
     calc_year = 2017
     calc_month = "Jan"
     calc_date = DATE
@@ -371,15 +383,25 @@ def get_str_date():
             calc_month = month[0]
         else:
             break
-    if calc_date == 1:
-        handle_monthly_expenses(calc_month)
+    if calc_year != PAID_OFF[1]:
+        handle_yearly_expenses(calc_year - PAID_OFF[1])
+        handle_monthly_expenses()
+        PAID_OFF = [calc_month, calc_year]
+    if calc_month != PAID_OFF[0]:
+        handle_monthly_expenses()
+        PAID_OFF = [calc_month, calc_year]
     return "%s %d, %d" % (calc_month, calc_date, calc_year)
 
-def handle_monthly_expenses(month):
-    global PAID_OFF
-    if PAID_OFF == month:
-        return
+def handle_monthly_expenses():
+    """ Handles Monthly Transactions (Accounts Receivable and Accounts Payable)"""
     balance_sheet["cash"] = balance_sheet["cash"] + balance_sheet["accounts_receivable"] - balance_sheet["accounts_payable"]
     balance_sheet["accounts_receivable"] = 0
     balance_sheet["accounts_payable"] = 0
-    PAID_OFF = month
+
+def handle_yearly_expenses(multiplier):
+    """ Handles Yearly Expenses """
+    global ANNUAL_EXPENSE
+    added_expenses = ANNUAL_EXPENSE*multiplier
+    income_statement["annual_expenses"] += added_expenses
+    balance_sheet["net_worth"] -= added_expenses
+    balance_sheet["cash"] -= added_expenses
